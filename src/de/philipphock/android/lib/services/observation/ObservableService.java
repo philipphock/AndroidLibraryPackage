@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public abstract class ObservableService extends Service implements ServiceObservationReactor{
+public abstract class ObservableService extends Service{
 
 	private volatile boolean init=false;
 	
@@ -19,13 +19,11 @@ public abstract class ObservableService extends Service implements ServiceObserv
 			
 			//register br recv that resends status broadcasts 
 			IntentFilter filter = new IntentFilter();
-			filter.addAction(ServiceObservableConstants.BROADCAST_SERVICE_FORCE_RESEND_STATUS);
+			filter.addAction(ConstantFactory.getForceResendStatusString(getServiceName()));
 		    this.registerReceiver(resendStatusBroadcastRecv, filter);	
 		    init=true;
 		    
-		    Intent i = new Intent();
-			i.setAction(ServiceObservableConstants.BROADCAST_SERVICE_STARTED);
-			sendBroadcast(i); 
+		    sendStartedIntent();
 		}else{
 			onLaterInit();
 		}
@@ -47,18 +45,27 @@ public abstract class ObservableService extends Service implements ServiceObserv
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Intent i = new Intent();
-			i.setAction(ServiceObservableConstants.BROADCAST_SERVICE_STARTED);
-			sendBroadcast(i); 
+			sendStartedIntent();
 		}
 	};
 	
 	public void onDestroy() {
-		
-		Intent i = new Intent();
-		i.setAction(ServiceObservableConstants.BROADCAST_SERVICE_STOPPED);
-		sendBroadcast(i); 
+		sendStoppedIntent();
 		unregisterReceiver(resendStatusBroadcastRecv);
 	}
 	
+	private void sendStartedIntent(){
+		Intent i = new Intent();
+		i.setAction(ConstantFactory.getServiceStartedString(getServiceName()));
+		i.putExtra(ServiceObservableConstants.BROADCAST_SERVICE_EXTRA_SERVICE_NAME, getServiceName() );
+		sendBroadcast(i); 
+	}
+	private void sendStoppedIntent(){
+		Intent i = new Intent();
+		i.setAction(ConstantFactory.getServiceStoppedString(getServiceName()));
+		sendBroadcast(i); 
+
+	}
+
+	public abstract String getServiceName();
 }

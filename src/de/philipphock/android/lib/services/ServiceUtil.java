@@ -1,5 +1,6 @@
 package de.philipphock.android.lib.services;
 
+import de.philipphock.android.lib.services.observation.ConstantFactory;
 import de.philipphock.android.lib.services.observation.ServiceObservableConstants;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -19,9 +20,9 @@ public class ServiceUtil {
 	}
 	
 	
-	public static final void requestStatusForServiceObservable(Context c){
+	public static final void requestStatusForServiceObservable(Context c,String serviceName){
 		Intent i = new Intent();
-		i.setAction(ServiceObservableConstants.BROADCAST_SERVICE_FORCE_RESEND_STATUS);
+		i.setAction(ConstantFactory.getForceResendStatusString(serviceName));
 		c.sendBroadcast(i); 
 	}
 }

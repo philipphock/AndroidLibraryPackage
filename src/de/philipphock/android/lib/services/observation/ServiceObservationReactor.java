@@ -4,6 +4,6 @@ import de.philipphock.android.lib.Reactor;
 
 public interface ServiceObservationReactor extends Reactor{
 
-	public void serviceStarted();
-	public void serviceStopped();
+	public void onServiceStarted(String serviceName);
+	public void onServiceStopped(String serviceName);
 }

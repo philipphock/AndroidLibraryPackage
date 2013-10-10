@@ -12,15 +12,17 @@ import de.philipphock.android.lib.BroadcastActor;
  */
 public class ServiceObservationActor extends BroadcastActor<ServiceObservationReactor>{
 
-	public ServiceObservationActor(ServiceObservationReactor reactor) {
+	private final String serviceName;
+	public ServiceObservationActor(ServiceObservationReactor reactor,String serviceName) {
 		super(reactor);
+		this.serviceName=serviceName;
 	}
 
 	@Override
 	public void register(Context context) {
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(ServiceObservableConstants.BROADCAST_SERVICE_STARTED);
-		filter.addAction(ServiceObservableConstants.BROADCAST_SERVICE_STOPPED);
+		filter.addAction(ConstantFactory.getServiceStartedString(serviceName));
+		filter.addAction(ConstantFactory.getServiceStoppedString(serviceName));
 		context.registerReceiver(this,filter);
 		
 	}
@@ -28,10 +30,10 @@ public class ServiceObservationActor extends BroadcastActor<ServiceObservationRe
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (ServiceObservableConstants.BROADCAST_SERVICE_STARTED.equals(intent.getAction())){
-			reactor.serviceStarted();
-		} else if (ServiceObservableConstants.BROADCAST_SERVICE_STOPPED.equals(intent.getAction())){
-			reactor.serviceStopped();
+		if (ConstantFactory.getServiceStartedString(serviceName).equals(intent.getAction())){
+			reactor.onServiceStarted(intent.getStringExtra(ServiceObservableConstants.BROADCAST_SERVICE_EXTRA_SERVICE_NAME));
+		} else if (ConstantFactory.getServiceStoppedString(serviceName).equals(intent.getAction())){
+			reactor.onServiceStopped(intent.getStringExtra(ServiceObservableConstants.BROADCAST_SERVICE_EXTRA_SERVICE_NAME));
 		}
 	}
 	

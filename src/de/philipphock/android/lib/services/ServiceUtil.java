@@ -1,7 +1,6 @@
 package de.philipphock.android.lib.services;
 
 import de.philipphock.android.lib.services.observation.ConstantFactory;
-import de.philipphock.android.lib.services.observation.ServiceObservableConstants;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;

@@ -58,11 +58,13 @@ public abstract class ObservableService extends Service{
 		Intent i = new Intent();
 		i.setAction(ConstantFactory.getServiceStartedString(getServiceName()));
 		i.putExtra(ServiceObservableConstants.BROADCAST_SERVICE_EXTRA_SERVICE_NAME, getServiceName() );
+		
 		sendBroadcast(i); 
 	}
 	private void sendStoppedIntent(){
 		Intent i = new Intent();
 		i.setAction(ConstantFactory.getServiceStoppedString(getServiceName()));
+		i.putExtra(ServiceObservableConstants.BROADCAST_SERVICE_EXTRA_SERVICE_NAME, getServiceName());
 		sendBroadcast(i); 
 
 	}

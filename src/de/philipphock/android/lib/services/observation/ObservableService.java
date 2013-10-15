@@ -69,5 +69,7 @@ public abstract class ObservableService extends Service{
 
 	}
 
-	public abstract String getServiceName();
+	public String getServiceName(){
+		return getClass().getName();
+	}
 }

@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class ServiceUtil {
 
@@ -29,5 +30,13 @@ public class ServiceUtil {
 		Intent i = new Intent();
 		i.setAction(ConstantFactory.getForceResendStatusString(serviceName));
 		c.sendBroadcast(i); 
+	}
+	
+	public static final void logRunningServices(Context c,String tag){
+	    ActivityManager manager = (ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        Log.d(tag,service.service.getClassName());
+	    }
 	}
 }

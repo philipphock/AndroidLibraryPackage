@@ -1,5 +1,6 @@
 package de.philipphock.android.lib.services;
 
+import de.philipphock.android.lib.services.messenger.MessengerService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public abstract class SensorService extends Service implements SensorEventListener{
+public abstract class SensorService extends MessengerService implements SensorEventListener{
 
 
 	private SensorManager sensorManager = null;
@@ -17,7 +18,7 @@ public abstract class SensorService extends Service implements SensorEventListen
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
     	
-    	return Service.START_STICKY;
+    	return super.onStartCommand(intent, flags, startId);
     }
     
     @Override
@@ -34,8 +35,9 @@ public abstract class SensorService extends Service implements SensorEventListen
     
     @Override
     public void onDestroy() {
-    	sensorManager.unregisterListener(this);
     	super.onDestroy();
+    	sensorManager.unregisterListener(this);
+
     }
     
     protected abstract int getSensorType();

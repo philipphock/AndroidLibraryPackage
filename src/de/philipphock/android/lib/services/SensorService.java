@@ -1,12 +1,11 @@
 package de.philipphock.android.lib.services;
 
-import de.philipphock.android.lib.services.messenger.MessengerService;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import de.philipphock.android.lib.services.messenger.MessengerService;
 
 public abstract class SensorService extends MessengerService implements SensorEventListener{
 

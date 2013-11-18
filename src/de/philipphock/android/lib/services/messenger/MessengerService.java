@@ -68,7 +68,6 @@ public abstract class MessengerService extends ObservableService {
 		public boolean handleMessage(Message msg) {
 			switch (msg.what) {
             case MSG_REGISTER_CLIENT:
-            	Log.d("MessengerService","register client");
                 mClients.add(msg.replyTo);
                 break;
             case MSG_UNREGISTER_CLIENT:
@@ -102,8 +101,6 @@ public abstract class MessengerService extends ObservableService {
     
     protected void sendToClients(Message msg){
     	for(Messenger m:mClients){
-    		Log.d("msg","send to client");
-
     		try {
 				m.send(msg);
 			} catch (RemoteException e) {

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 public abstract class ObservableService extends Service{
 
@@ -52,6 +53,8 @@ public abstract class ObservableService extends Service{
 	public void onDestroy() {
 		sendStoppedIntent();
 		unregisterReceiver(resendStatusBroadcastRecv);
+		super.onDestroy();
+		Log.d("SERVICE","onDestroy called");
 	}
 	
 	private void sendStartedIntent(){

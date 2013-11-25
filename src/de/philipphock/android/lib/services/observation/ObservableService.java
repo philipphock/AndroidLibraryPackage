@@ -1,27 +1,36 @@
 package de.philipphock.android.lib.services.observation;
 
+import de.philipphock.android.lib.services.ServiceUtil;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
+import android.widget.Toast;
 
 public abstract class ObservableService extends Service{
 
 	private volatile boolean init=false;
 	
+	public boolean isDead(){
+		return !ServiceUtil.isServiceRunning(this, this.getClass());
+	}
 	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		
 		if (!init){
 			onFirstInit();
 			
 			//register br recv that resends status broadcasts 
 			IntentFilter filter = new IntentFilter();
 			filter.addAction(ConstantFactory.getForceResendStatusString(getServiceName()));
-		    this.registerReceiver(resendStatusBroadcastRecv, filter);	
+		    this.registerReceiver(resendStatusBroadcastRecv, filter);
+
+		    
 		    init=true;
 		    
 		    sendStartedIntent();
@@ -41,6 +50,9 @@ public abstract class ObservableService extends Service{
 	protected void onLaterInit(){
 		
 	}
+	
+
+	
 	
 	BroadcastReceiver resendStatusBroadcastRecv = new BroadcastReceiver() {
 		
@@ -75,4 +87,8 @@ public abstract class ObservableService extends Service{
 	public String getServiceName(){
 		return getClass().getName();
 	}
+	
+
+
+	
 }

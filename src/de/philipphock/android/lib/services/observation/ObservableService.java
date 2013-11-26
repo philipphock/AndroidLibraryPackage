@@ -1,15 +1,13 @@
 package de.philipphock.android.lib.services.observation;
 
-import de.philipphock.android.lib.services.ServiceUtil;
 import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import android.widget.Toast;
+import de.philipphock.android.lib.services.ServiceUtil;
 
 public abstract class ObservableService extends Service{
 

@@ -1,6 +1,7 @@
 package de.philipphock.android.lib.services.observation;
 
 import de.philipphock.android.lib.services.ServiceUtil;
+import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,15 @@ public abstract class ObservableService extends Service{
 
 	private volatile boolean init=false;
 	
+	/**
+	 * Services behave very strange. 
+	 * When a service is called via {@link Activity#startService(Intent)} and also bound via {@link Activity#bindService(Intent, android.content.ServiceConnection, int)},
+	 * the service is still alive after we call {@link Activity#stopService(Intent)}. Even if we force unbind all connections in the service, the service still receives data.
+	 * <br>
+	 * However, after we call stopService, we can figure this out. Therefore we define the service as <i>dead</i> after we call {@link Activity#stopService(Intent)}.
+	 * Meaning that if the service is dead, we should not do anything. 
+	 * @return true if the service should not interact with anything else.
+	 */
 	public boolean isDead(){
 		return !ServiceUtil.isServiceRunning(this, this.getClass());
 	}

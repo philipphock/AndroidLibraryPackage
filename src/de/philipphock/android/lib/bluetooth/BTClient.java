@@ -1,13 +1,12 @@
 package de.philipphock.android.lib.bluetooth;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 public class BTClient implements Runnable {
 	private Thread recvThread;
@@ -15,8 +14,6 @@ public class BTClient implements Runnable {
 	private BluetoothSocket clientSocket;
 	private final BluetoothDevice device;
 	private final UUID uuid;
-	private InputStream clientSocketInStream;
-	private OutputStream clientSocketOutStream;
 
 	private boolean isConnected = false;
 	private BTClient.BTClientCallback clientcallback;
@@ -68,48 +65,37 @@ public class BTClient implements Runnable {
 			}
 			
 
-			
 			clientSocket.connect();
-			
-			clientSocketInStream = clientSocket.getInputStream();
-			clientSocketOutStream = clientSocket.getOutputStream();
+			clientcallback.onConnection(true);
+			isConnected=true;
+			// manage the connection
+			int bytes = 0;
+			while (listening) {
+				try {
+					// Read from the InputStream
+					bytes = clientSocket.getInputStream().read(buffer);
+					if (bytes == -1) {
+						// connection remotely closed
+						cancel("server closed connection");
+
+						break;
+					}
+					
+					clientcallback.onRecv(buffer,bytes);
+				} catch (IOException e) {
+					cancel("io exception while read");
+					break;
+				}
+			}
 			
 		} catch (IOException connectException) {
 			// Unable to connect; close the socket and get out.
 			connectException.printStackTrace();
-			try {
-				clientSocket.close();
-				clientcallback.onConnection(false);
-				isConnected=false;
-			} catch (IOException closeException) {
-				closeException.printStackTrace();
-			}
+
+			cancel("socket error, unable to connect");
 			return;
 		}
-		clientcallback.onConnection(true);
-		isConnected=true;
-		// manage the connection
-		int bytes = 0;
-		while (listening) {
-			try {
-				// Read from the InputStream
-				bytes = clientSocketInStream.read(buffer);
-				if (bytes == -1) {
-					// connection remotely closed
-					listening = false;
-					clientcallback.onConnection(false);
-					isConnected=false;
-					break;
-				}
-				
-				clientcallback.onRecv(buffer,bytes);
-			} catch (IOException e) {
-				e.printStackTrace();
-				clientcallback.onConnection(false);
-				isConnected=false;
-				break;
-			}
-		}
+		
 	}
 
 	/**
@@ -117,9 +103,27 @@ public class BTClient implements Runnable {
 	 * 
 	 * @throws IOException
 	 */
-	public void cancel() throws IOException {
+	public void cancel(String reason) {
 		listening = false;
-		clientSocket.close();
+		isConnected = false;
+		try {
+		if (clientSocket != null)
+				clientSocket.getInputStream().close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (clientcallback!= null){
+			
+			clientcallback.onConnection(false);
+		}
+			
+		
+		try {
+			clientSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Log.d("debug","cancel client: "+reason);
 
 	}
 
@@ -129,10 +133,15 @@ public class BTClient implements Runnable {
 	
 	public void send(byte[] b){
 		try {
-			clientSocketOutStream.write(b);
-			clientSocketOutStream.flush();
+			if (clientSocket.getOutputStream() == null){
+				cancel("error while sending");
+				return;
+			}
+			clientSocket.getOutputStream().write(b);
+			clientSocket.getOutputStream().flush();
 		} catch (IOException e) {
-			
+			cancel("sending fatal error");
+
 			e.printStackTrace();
 		}
 		

@@ -39,4 +39,12 @@ public class ContextLessCode {
 		},null);
 		
 	}
+	
+	
+	public static void gotoHome(Context c){
+		Intent startMain = new Intent(Intent.ACTION_MAIN);
+		startMain.addCategory(Intent.CATEGORY_HOME);
+		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		c.startActivity(startMain);
+	}
 }

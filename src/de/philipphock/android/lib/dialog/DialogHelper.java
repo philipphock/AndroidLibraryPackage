@@ -19,6 +19,7 @@ public class DialogHelper {
 	
 	public interface SelectedCallback<E>{
 		public void onSelected(E d);
+		public void onCancel();
 	}
 	
 

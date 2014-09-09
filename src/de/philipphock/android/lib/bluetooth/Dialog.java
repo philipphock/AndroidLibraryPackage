@@ -2,13 +2,13 @@ package de.philipphock.android.lib.bluetooth;
 
 import java.util.Set;
 
-import de.philipphock.android.lib.dialog.DialogHelper.SelectedCallback;
-
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.widget.ListAdapter;
+import de.philipphock.android.lib.dialog.DialogHelper.SelectedCallback;
 
 public class Dialog {
 	public static AlertDialog createSingleChoiceDialog(Context c, String title,Set<BluetoothDevice> devices,final SelectedCallback<BluetoothDevice> callback){
@@ -23,7 +23,18 @@ public class Dialog {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				BluetoothDevice d = daa.getItem(which);
+				dialog.dismiss();
 				callback.onSelected(d);
+			}
+		});
+       
+        builder.setNegativeButton("Abort", new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				callback.onCancel();
+				
 			}
 		});
         ret = builder.create();
